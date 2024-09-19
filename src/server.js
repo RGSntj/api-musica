@@ -1,5 +1,7 @@
 import express from "express";
 
+import { v4 as uuidv4 } from "uuid";
+
 const servidor = express();
 servidor.use(express.json());
 
@@ -15,14 +17,32 @@ const musicas = [
 servidor.post("/postar", (req, resp) => {
   const { nome, artista, url } = req.body;
 
+  const idGerado = uuidv4();
+
   const objMusica = {
-    id: 2,
+    id: idGerado,
     nome,
     artista,
     url,
   };
 
   musicas.push(objMusica);
+
+  return resp.status(201).send(musicas);
+});
+
+servidor.put("/atualizar/:id", (req, resp) => {
+  const { id } = req.params;
+  const { nome, artista, url } = req.body;
+
+  const idxMusica = musicas.findIndex((m) => m.id == id);
+
+  musicas[idxMusica] = {
+    ...musicas[idxMusica],
+    artista,
+    nome,
+    url,
+  };
 
   return resp.send(musicas);
 });
